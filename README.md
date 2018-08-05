@@ -1,2 +1,2 @@
 # instaID
-Instant ID verification
+Instant ID verification on Hyperledger Fabric
