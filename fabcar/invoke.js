@@ -61,8 +61,8 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	var request = {
 		//targets: let default to the peer assigned to the client
 		chaincodeId: 'fabcar',
-		fcn: '',
-		args: [''],
+		fcn: 'createUser',
+		args: ['5F39B51AE9A4DACBB8D9538229D726BFB7E1A03633E37D64598C32989A8C1277', 'B221B8087F7F356E9FCFE5596CCB32D0ECC5A7630382927DE0C695CA29DBD668', '1B4C9133DA73A711322404314402765AB0D23FD362A167D6F0C65BB215113D94'], //Jon, 01/01/2004, orange
 		chainId: 'mychannel',
 		txId: tx_id
 	};

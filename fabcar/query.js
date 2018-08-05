@@ -54,8 +54,8 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	const request = {
 		//targets : --- letting this default to the peers assigned to the channel
 		chaincodeId: 'fabcar',
-		fcn: 'queryAllCars',
-		args: ['']
+		fcn: 'queryUser',
+		args: ['E9FB6A394DB5FFD6DBA9B31AC7D9A90D56F90767AFAF1E14D6DCAA37DB180932', 'E52309434E28D7E70AB5785190205D04DAD8A5177442AA5FC7DEB1297D75E23F', '16477688C0E00699C6CFA4497A3612D7E83C532062B64B250FED8908128ED548']
 	};
 
 	// send the query proposal to the peer
