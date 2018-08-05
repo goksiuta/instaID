@@ -16,7 +16,6 @@ let Chaincode = class {
     return shim.success();
   }
 
-  //Used https://passwordsgenerator.net/sha256-hash-generator/ for hash generation
   // Inserts basic data
   async initLedger(stub, args) {
     console.info('============= START : Initialize Ledger ===========');
@@ -76,26 +75,17 @@ let Chaincode = class {
 
   async queryUser(stub, args) {
     if (args.length != 3) {
-      throw new Error('Incorrect number of arguments. Expecting 3 - User Name Hash ex: hash');
+      throw new Error('Incorrect number of arguments. Expecting User Name Hash ex: hash');
     }
     let userNameHash = args[0];
-    let userDoBHash = args[1];
-    let userImageHash = args[2];
+    let DOBHash = args[1]
+    let IMGHash = args[2]
 
     let userAsBytes = await stub.getState(userNameHash); //get the user from chaincode state
     if (!userAsBytes || userAsBytes.toString().length <= 0) {
       throw new Error(userNameHash + ' does not exist: ');
     }
-
-    console.log('User Exists ' + userAsBytes.toString());
-    let user = JSON.parse(userAsBytes);
-    console.log('User Exists JSON ' +user);
-    if (user.dobHash === userDoBHash && user.imageHash === userImageHash) {
-      console.log('User DoB and Image Hash matched');
-      return true;
-    }
-
-    return false;
+    return userAsBytes
   }
 
   async createUser(stub, args) {
