@@ -16,6 +16,7 @@ let Chaincode = class {
     return shim.success();
   }
 
+  //Used https://passwordsgenerator.net/sha256-hash-generator/ for hash generation
   // Inserts basic data
   async initLedger(stub, args) {
     console.info('============= START : Initialize Ledger ===========');
@@ -74,8 +75,8 @@ let Chaincode = class {
   }
 
   async queryUser(stub, args) {
-    if (args.length != 1) {
-      throw new Error('Incorrect number of arguments. Expecting User Name Hash ex: hash');
+    if (args.length != 3) {
+      throw new Error('Incorrect number of arguments. Expecting 3 - User Name Hash ex: hash');
     }
     let userNameHash = args[0];
     let userDoBHash = args[1];
