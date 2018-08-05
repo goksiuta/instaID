@@ -44,6 +44,12 @@ let Chaincode = class {
       imageHash: 'A67A41C8BC79D5DA917B5051F1F0D3F5AEB4B63BA246B3546A961EF7A3C7D931' //'pink'
     });
 
+    users.push({
+      nameHash: 'USERTEST',
+      dobHash: '05051985',
+      imageHash: 'IMGTEST'
+    })
+
     for (let i = 0; i < users.length; i++) {
       users[i].docType = 'user';
       await stub.putState(users[i].nameHash, Buffer.from(JSON.stringify(users[i])));
@@ -85,7 +91,13 @@ let Chaincode = class {
     if (!userAsBytes || userAsBytes.toString().length <= 0) {
       throw new Error(userNameHash + ' does not exist: ');
     }
-    return userAsBytes
+    let jsonRes = {}
+    let user = JSON.parse(userAsBytes)
+    if (user.dobHash === DOBHash && user.imageHash === IMGHash) {
+      return userAsBytes
+    } else {
+      throw new Error('DOB or Image did not match')
+    }
   }
 
   async createUser(stub, args) {
