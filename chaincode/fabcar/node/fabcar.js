@@ -75,7 +75,7 @@ let Chaincode = class {
 
   async queryUser(stub, args) {
     if (args.length != 3) {
-      throw new Error('Incorrect number of arguments. Expecting User Name Hash ex: hash');
+      throw new Error('Incorrect number of arguments. Expecting 3: nameHash, dobHash, imageHash');
     }
     let userNameHash = args[0];
     let DOBHash = args[1]
@@ -88,6 +88,7 @@ let Chaincode = class {
     let jsonRes = {}
     let user = JSON.parse(userAsBytes)
     if (user.dobHash === DOBHash && user.imageHash === IMGHash) {
+      //must return stringified json in buffer form to invoke function which then returns buffer to query and tostring the buffer in query to return result
       return Buffer.from(JSON.stringify({ "verified": true }))
     } else {
       throw new Error('DOB or Image did not match')
