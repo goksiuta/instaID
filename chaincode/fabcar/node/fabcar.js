@@ -88,7 +88,7 @@ let Chaincode = class {
     let jsonRes = {}
     let user = JSON.parse(userAsBytes)
     if (user.dobHash === DOBHash && user.imageHash === IMGHash) {
-      return userAsBytes
+      return Buffer.from(JSON.stringify({ "verified": true }))
     } else {
       throw new Error('DOB or Image did not match')
     }
