@@ -1,7 +1,6 @@
 /*
-# Copyright IBM Corp. All Rights Reserved.
+# Copyright InstaID. All Rights Reserved.
 #
-# SPDX-License-Identifier: Apache-2.0
 */
 
 'use strict';
@@ -10,15 +9,51 @@ const util = require('util');
 
 let Chaincode = class {
 
-  // The Init method is called when the Smart Contract 'fabcar' is instantiated by the blockchain network
+  // The Init method is called when the Smart Contract 'instaid' is instantiated by the blockchain network
   // Best practice is to have any Ledger initialization in separate function -- see initLedger()
   async Init(stub) {
-    console.info('=========== Instantiated fabcar chaincode ===========');
+    console.info('=========== Instantiated instaid chaincode ===========');
     return shim.success();
   }
 
+  // Inserts basic data
+  async initLedger(stub, args) {
+    console.info('============= START : Initialize Ledger ===========');
+    let users = [];
+    users.push({
+      nameHash: 'Anand',
+      dobHash: '01/01/2000',
+      imageHash: 'blue'
+    });
+
+    users.push({
+      nameHash: 'Dan',
+      dobHash: '01/01/2001',
+      imageHash: 'green'
+    });
+
+    users.push({
+      nameHash: 'Brady',
+      dobHash: '01/01/2002',
+      imageHash: 'red'
+    });
+
+    users.push({
+      nameHash: 'Greg',
+      dobHash: '01/01/2003',
+      imageHash: 'pink'
+    });
+
+    for (let i = 0; i < users.length; i++) {
+      users[i].docType = 'user';
+      await stub.putState('USER' + i, Buffer.from(JSON.stringify(users[i])));
+      console.info('Added <--> ', users[i]);
+    }
+    console.info('============= END : Initialize Ledger ===========');
+  }
+
   // The Invoke method is called as a result of an application request to run the Smart Contract
-  // 'fabcar'. The calling application program has also specified the particular smart contract
+  // 'instaid'. The calling application program has also specified the particular smart contract
   // function to be called, with arguments
   async Invoke(stub) {
     let ret = stub.getFunctionAndParameters();
@@ -38,155 +73,49 @@ let Chaincode = class {
     }
   }
 
-  async queryCar(stub, args) {
+  async queryUser(stub, args) {
     if (args.length != 1) {
-      throw new Error('Incorrect number of arguments. Expecting CarNumber ex: CAR01');
+      throw new Error('Incorrect number of arguments. Expecting UserNumber ex: USER01');
     }
-    let carNumber = args[0];
+    let userNumber = args[0];
 
-    let carAsBytes = await stub.getState(carNumber); //get the car from chaincode state
-    if (!carAsBytes || carAsBytes.toString().length <= 0) {
-      throw new Error(carNumber + ' does not exist: ');
+    let userAsBytes = await stub.getState(userNumber); //get the user from chaincode state
+    if (!userAsBytes || userAsBytes.toString().length <= 0) {
+      throw new Error(userNumber + ' does not exist: ');
     }
-    console.log(carAsBytes.toString());
-    return carAsBytes;
+    console.log(userAsBytes.toString());
+    return userAsBytes;
   }
 
-  async initLedger(stub, args) {
-    console.info('============= START : Initialize Ledger ===========');
-    let cars = [];
-    cars.push({
-      make: 'Toyota',
-      model: 'Prius',
-      color: 'blue',
-      owner: 'Tomoko'
-    });
-    cars.push({
-      make: 'Ford',
-      model: 'Mustang',
-      color: 'red',
-      owner: 'Brad'
-    });
-    cars.push({
-      make: 'Hyundai',
-      model: 'Tucson',
-      color: 'green',
-      owner: 'Jin Soo'
-    });
-    cars.push({
-      make: 'Volkswagen',
-      model: 'Passat',
-      color: 'yellow',
-      owner: 'Max'
-    });
-    cars.push({
-      make: 'Tesla',
-      model: 'S',
-      color: 'black',
-      owner: 'Adriana'
-    });
-    cars.push({
-      make: 'Peugeot',
-      model: '205',
-      color: 'purple',
-      owner: 'Michel'
-    });
-    cars.push({
-      make: 'Chery',
-      model: 'S22L',
-      color: 'white',
-      owner: 'Aarav'
-    });
-    cars.push({
-      make: 'Fiat',
-      model: 'Punto',
-      color: 'violet',
-      owner: 'Pari'
-    });
-    cars.push({
-      make: 'Tata',
-      model: 'Nano',
-      color: 'indigo',
-      owner: 'Valeria'
-    });
-    cars.push({
-      make: 'Holden',
-      model: 'Barina',
-      color: 'brown',
-      owner: 'Shotaro'
-    });
-
-    for (let i = 0; i < cars.length; i++) {
-      cars[i].docType = 'car';
-      await stub.putState('CAR' + i, Buffer.from(JSON.stringify(cars[i])));
-      console.info('Added <--> ', cars[i]);
-    }
-    console.info('============= END : Initialize Ledger ===========');
-  }
-
-  async createCar(stub, args) {
-    console.info('============= START : Create Car ===========');
+  async createUser(stub, args) {
+    console.info('============= START : Create User ===========');
     if (args.length != 5) {
       throw new Error('Incorrect number of arguments. Expecting 5');
     }
 
-    var car = {
-      docType: 'car',
-      make: args[1],
-      model: args[2],
-      color: args[3],
-      owner: args[4]
+    var user = {
+      docType: 'user',
+      nameHash: args[1],
+      dobHash: args[2],
+      imageHash: args[3]
     };
 
-    await stub.putState(args[0], Buffer.from(JSON.stringify(car)));
-    console.info('============= END : Create Car ===========');
+    await stub.putState(args[0], Buffer.from(JSON.stringify(user)));
+    console.info('============= END : Create User ===========');
   }
 
-  async queryAllCars(stub, args) {
-
-    let startKey = 'CAR0';
-    let endKey = 'CAR999';
-
-    let iterator = await stub.getStateByRange(startKey, endKey);
-
-    let allResults = [];
-    while (true) {
-      let res = await iterator.next();
-
-      if (res.value && res.value.value.toString()) {
-        let jsonRes = {};
-        console.log(res.value.value.toString('utf8'));
-
-        jsonRes.Key = res.value.key;
-        try {
-          jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
-        } catch (err) {
-          console.log(err);
-          jsonRes.Record = res.value.value.toString('utf8');
-        }
-        allResults.push(jsonRes);
-      }
-      if (res.done) {
-        console.log('end of data');
-        await iterator.close();
-        console.info(allResults);
-        return Buffer.from(JSON.stringify(allResults));
-      }
-    }
-  }
-
-  async changeCarOwner(stub, args) {
-    console.info('============= START : changeCarOwner ===========');
+  async changeUserOwner(stub, args) {
+    console.info('============= START : changeUserOwner ===========');
     if (args.length != 2) {
       throw new Error('Incorrect number of arguments. Expecting 2');
     }
 
-    let carAsBytes = await stub.getState(args[0]);
-    let car = JSON.parse(carAsBytes);
-    car.owner = args[1];
+    let userAsBytes = await stub.getState(args[0]);
+    let user = JSON.parse(userAsBytes);
+    user.owner = args[1];
 
-    await stub.putState(args[0], Buffer.from(JSON.stringify(car)));
-    console.info('============= END : changeCarOwner ===========');
+    await stub.putState(args[0], Buffer.from(JSON.stringify(user)));
+    console.info('============= END : changeUserOwner ===========');
   }
 };
 
